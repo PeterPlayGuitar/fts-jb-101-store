@@ -5,6 +5,8 @@ import com.apeter0.store.category.exception.CategoryExistsException;
 import com.apeter0.store.category.exception.CategoryNotExistsException;
 import com.apeter0.store.city.exception.CityExistsException;
 import com.apeter0.store.city.exception.CityNotExistsException;
+import com.apeter0.store.photo.exception.PhotoExistException;
+import com.apeter0.store.photo.exception.PhotoNotExistException;
 import com.apeter0.store.product.exception.ProductExistsException;
 import com.apeter0.store.product.exception.ProductNotExistsException;
 import com.apeter0.store.street.exception.StreetExistsException;
@@ -63,6 +65,16 @@ public class HandleApiExceptions extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ProductNotExistsException.class)
     public ResponseEntity<Object> productNotExistsException(ProductNotExistsException ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("This product does not exist", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(PhotoExistException.class)
+    public ResponseEntity<Object> photoExistException(PhotoExistException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This photo already exists", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(PhotoNotExistException.class)
+    public ResponseEntity<Object> photoNotExistsException(PhotoNotExistException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This photo does not exist", HttpStatus.BAD_REQUEST));
     }
 
 

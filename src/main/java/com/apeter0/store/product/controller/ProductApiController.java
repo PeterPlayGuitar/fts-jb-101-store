@@ -4,6 +4,7 @@ import com.apeter0.store.base.api.response.OkResponse;
 import com.apeter0.store.base.api.response.SearchResponse;
 import com.apeter0.store.category.exception.CategoryNotExistsException;
 import com.apeter0.store.city.exception.CityNotExistsException;
+import com.apeter0.store.photo.exception.PhotoNotExistException;
 import com.apeter0.store.product.api.request.ProductRequest;
 import com.apeter0.store.product.api.request.ProductSearchRequest;
 import com.apeter0.store.product.api.response.ProductResponse;
@@ -56,12 +57,12 @@ class ProductApiController {
     @ApiOperation(value = "Create product")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful"),
-            @ApiResponse(code = 400, message = "Category does not exist, or one of the cities do not exist")
+            @ApiResponse(code = 400, message = "Category does not exist, or one of the cities do not exist, or this photo with this id does not exist")
     })
     @PostMapping(ProductApiRoutes.ADMIN_ROOT)
     OkResponse<ProductResponse> create(
             @ApiParam(value = "Parameters for new product") @RequestBody ProductRequest request
-    ) throws CategoryNotExistsException, CityNotExistsException {
+    ) throws CategoryNotExistsException, CityNotExistsException, PhotoNotExistException {
         ProductDoc productDoc = productApiService.create(request);
         ProductResponse productResponse = ProductMapping.getInstance().getDocToResponseMapper().convert(productDoc);
         return OkResponse.of(productResponse);
@@ -70,12 +71,12 @@ class ProductApiController {
     @ApiOperation(value = "Update product information")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful"),
-            @ApiResponse(code = 400, message = "There is no product with such id, or there is no such city, or there is no such category")
+            @ApiResponse(code = 400, message = "There is no product with such id, or there is no such city, or there is no such category, or photo with this id does not exist")
     })
     @PutMapping(ProductApiRoutes.ADMIN_ROOT)
     OkResponse<ProductResponse> update(
             @ApiParam(value = "Parameters for updating product") @RequestBody ProductRequest request
-    ) throws ProductNotExistsException, CategoryNotExistsException, CityNotExistsException {
+    ) throws ProductNotExistsException, CategoryNotExistsException, CityNotExistsException, PhotoNotExistException {
         ProductDoc productDoc = productApiService.update(request);
         ProductResponse productResponse = ProductMapping.getInstance().getDocToResponseMapper().convert(productDoc);
         return OkResponse.of(productResponse);
