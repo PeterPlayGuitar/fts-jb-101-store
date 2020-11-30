@@ -5,6 +5,8 @@ import com.apeter0.store.category.exception.CategoryExistsException;
 import com.apeter0.store.category.exception.CategoryNotExistsException;
 import com.apeter0.store.city.exception.CityExistsException;
 import com.apeter0.store.city.exception.CityNotExistsException;
+import com.apeter0.store.product.exception.ProductExistsException;
+import com.apeter0.store.product.exception.ProductNotExistsException;
 import com.apeter0.store.street.exception.StreetExistsException;
 import com.apeter0.store.street.exception.StreetNotExistsException;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -51,6 +53,16 @@ public class HandleApiExceptions extends ResponseEntityExceptionHandler {
     @ExceptionHandler(CategoryNotExistsException.class)
     public ResponseEntity<Object> categoryNotExistException(CategoryNotExistsException ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("This category does not exist", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(ProductExistsException.class)
+    public ResponseEntity<Object> productExistsException(ProductExistsException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This product already exists", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(ProductNotExistsException.class)
+    public ResponseEntity<Object> productNotExistsException(ProductNotExistsException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This product does not exist", HttpStatus.BAD_REQUEST));
     }
 
 
