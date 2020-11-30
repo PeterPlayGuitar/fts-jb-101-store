@@ -29,7 +29,7 @@ class CityApiController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful")
     })
-    @GetMapping(CityApiRoutes.ROOT)
+    @GetMapping(CityApiRoutes.ADMIN_ROOT)
     OkResponse<SearchResponse<CityResponse>> search(
             @ApiParam(value = "City search parameters") @ModelAttribute SearchRequest request
     ) {
@@ -43,7 +43,7 @@ class CityApiController {
             @ApiResponse(code = 200, message = "Successful"),
             @ApiResponse(code = 404, message = "City not found")
     })
-    @GetMapping(CityApiRoutes.BY_ID)
+    @GetMapping(CityApiRoutes.ADMIN_BY_ID)
     OkResponse<CityResponse> getById(
             @ApiParam(value = "City id") @PathVariable ObjectId id
     ) throws ChangeSetPersister.NotFoundException {
@@ -57,7 +57,7 @@ class CityApiController {
             @ApiResponse(code = 200, message = "Successful"),
             @ApiResponse(code = 400, message = "City already exists")
     })
-    @PostMapping(CityApiRoutes.ROOT)
+    @PostMapping(CityApiRoutes.ADMIN_ROOT)
     OkResponse<CityResponse> create(
             @ApiParam(value = "Parameters for new city") @RequestBody CityRequest request
     ) throws CityExistsException {
@@ -71,7 +71,7 @@ class CityApiController {
             @ApiResponse(code = 200, message = "Successful"),
             @ApiResponse(code = 400, message = "City with this parameters already exists, or there is no city with such id")
     })
-    @PutMapping(CityApiRoutes.ROOT)
+    @PutMapping(CityApiRoutes.ADMIN_ROOT)
     OkResponse<CityResponse> update(
             @ApiParam(value = "Parameters for updating city") @RequestBody CityRequest request
     ) throws CityNotExistsException, CityExistsException {
@@ -84,7 +84,7 @@ class CityApiController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful")
     })
-    @DeleteMapping(CityApiRoutes.BY_ID)
+    @DeleteMapping(CityApiRoutes.ADMIN_BY_ID)
     OkResponse<String> delete(
             @ApiParam(value = "City id") @PathVariable ObjectId id
     ) {

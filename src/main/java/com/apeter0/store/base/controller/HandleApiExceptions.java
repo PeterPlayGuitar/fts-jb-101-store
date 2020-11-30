@@ -1,6 +1,8 @@
 package com.apeter0.store.base.controller;
 
 import com.apeter0.store.base.api.response.ErrorResponse;
+import com.apeter0.store.category.exception.CategoryExistsException;
+import com.apeter0.store.category.exception.CategoryNotExistsException;
 import com.apeter0.store.city.exception.CityExistsException;
 import com.apeter0.store.city.exception.CityNotExistsException;
 import com.apeter0.store.street.exception.StreetExistsException;
@@ -39,6 +41,16 @@ public class HandleApiExceptions extends ResponseEntityExceptionHandler {
     @ExceptionHandler(StreetNotExistsException.class)
     public ResponseEntity<Object> cityNotExistException(StreetNotExistsException ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("This street does not exist", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(CategoryExistsException.class)
+    public ResponseEntity<Object> categoryExistException(CategoryExistsException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This category already exists", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(CategoryNotExistsException.class)
+    public ResponseEntity<Object> categoryNotExistException(CategoryNotExistsException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This category does not exist", HttpStatus.BAD_REQUEST));
     }
 
 
