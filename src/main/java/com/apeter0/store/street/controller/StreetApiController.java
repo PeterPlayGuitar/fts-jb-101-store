@@ -59,7 +59,7 @@ class StreetApiController {
             @ApiResponse(code = 200, message = "Successful"),
             @ApiResponse(code = 400, message = "Street already exists")
     })
-    @PostMapping(StreetApiRoutes.ROOT)
+    @PostMapping(StreetApiRoutes.ADMIN_ROOT)
     OkResponse<StreetResponse> create(
             @ApiParam(value = "Parameters for new street") @RequestBody StreetRequest request
     ) throws CityNotExistsException, StreetExistsException {
@@ -73,7 +73,7 @@ class StreetApiController {
             @ApiResponse(code = 200, message = "Successful"),
             @ApiResponse(code = 400, message = "Street with this parameters already exists, or there is no street with such id")
     })
-    @PutMapping(StreetApiRoutes.ROOT)
+    @PutMapping(StreetApiRoutes.ADMIN_ROOT)
     OkResponse<StreetResponse> update(
             @ApiParam(value = "Parameters for updating street") @RequestBody StreetRequest request
     ) throws StreetNotExistsException, StreetExistsException {
@@ -86,7 +86,7 @@ class StreetApiController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful")
     })
-    @DeleteMapping(StreetApiRoutes.BY_ID)
+    @DeleteMapping(StreetApiRoutes.ADMIN_BY_ID)
     OkResponse<String> delete(
             @ApiParam(value = "Street id") @PathVariable ObjectId id
     ) {
