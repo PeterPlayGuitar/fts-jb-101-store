@@ -29,7 +29,8 @@ class StreetApiController {
 
     @ApiOperation(value = "Street search")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful")
+            @ApiResponse(code = 200, message = "Successful"),
+            @ApiResponse(code = 400, message = "Such city does not exist")
     })
     @GetMapping(StreetApiRoutes.ROOT)
     OkResponse<SearchResponse<StreetResponse>> search(
@@ -57,7 +58,7 @@ class StreetApiController {
     @ApiOperation(value = "Create street")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful"),
-            @ApiResponse(code = 400, message = "Street already exists")
+            @ApiResponse(code = 400, message = "Such street already exists in this city, or this city does not exist")
     })
     @PostMapping(StreetApiRoutes.ADMIN_ROOT)
     OkResponse<StreetResponse> create(
@@ -71,7 +72,7 @@ class StreetApiController {
     @ApiOperation(value = "Update street information")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful"),
-            @ApiResponse(code = 400, message = "Street with this parameters already exists, or there is no street with such id")
+            @ApiResponse(code = 400, message = "Street with such name already exists in this city, or can't fine a street with this id")
     })
     @PutMapping(StreetApiRoutes.ADMIN_ROOT)
     OkResponse<StreetResponse> update(
