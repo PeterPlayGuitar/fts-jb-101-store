@@ -58,6 +58,7 @@ public class CityApiService {
                 .build();
 
         return cityRepository.save(cityDoc);
+
     }
 
     public CityDoc update(CityRequest cityRequest) throws CityNotExistsException, CityExistsException {
