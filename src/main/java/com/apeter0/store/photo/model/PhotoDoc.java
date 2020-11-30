@@ -1,20 +1,15 @@
-package com.apeter0.store.street.model;
+package com.apeter0.store.photo.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 @Getter
-@Setter
 @Builder
-public class StreetDoc {
-
+public class PhotoDoc {
     @Id
     private ObjectId id;
-    private String name;
-    private ObjectId cityId;
+    private String contentType;
 }
