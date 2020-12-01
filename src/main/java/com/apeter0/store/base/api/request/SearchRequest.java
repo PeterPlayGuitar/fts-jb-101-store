@@ -10,7 +10,7 @@ import lombok.Setter;
 @ApiModel(value = "Search request", description = "Represent parameters for search")
 public class SearchRequest {
 
-    @ApiParam(name = "query", value = "Search by fields of entity", required = false)
+    @ApiParam(name = "query", value = "Search by fields of entity with incomplete match", required = false)
     protected String query = null;
 
     @ApiParam(name = "size of result list", value = "Number of elements in result list (default 100)", required = false)

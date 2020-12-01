@@ -5,6 +5,8 @@ import com.apeter0.store.category.exception.CategoryExistsException;
 import com.apeter0.store.category.exception.CategoryNotExistsException;
 import com.apeter0.store.city.exception.CityExistsException;
 import com.apeter0.store.city.exception.CityNotExistsException;
+import com.apeter0.store.guest.exception.GuestExistsException;
+import com.apeter0.store.guest.exception.GuestNotExistsException;
 import com.apeter0.store.image.exception.ImageExistException;
 import com.apeter0.store.image.exception.ImageNotExistException;
 import com.apeter0.store.product.exception.ProductExistsException;
@@ -38,12 +40,12 @@ public class HandleApiExceptions extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(StreetExistsException.class)
-    public ResponseEntity<Object> cityExistException(StreetExistsException ex, WebRequest request) {
+    public ResponseEntity<Object> streetExistException(StreetExistsException ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("This street already exists", HttpStatus.BAD_REQUEST));
     }
 
     @ExceptionHandler(StreetNotExistsException.class)
-    public ResponseEntity<Object> cityNotExistException(StreetNotExistsException ex, WebRequest request) {
+    public ResponseEntity<Object> streetNotExistException(StreetNotExistsException ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("This street does not exist", HttpStatus.BAD_REQUEST));
     }
 
@@ -75,6 +77,16 @@ public class HandleApiExceptions extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ImageNotExistException.class)
     public ResponseEntity<Object> imageNotExistsException(ImageNotExistException ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("This image does not exist", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(GuestExistsException.class)
+    public ResponseEntity<Object> guestExistsException(GuestExistsException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This guest already exists", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(GuestNotExistsException.class)
+    public ResponseEntity<Object> guestNotExistsException(GuestNotExistsException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This guest does not exist", HttpStatus.BAD_REQUEST));
     }
 
 

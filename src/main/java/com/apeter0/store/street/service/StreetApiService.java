@@ -35,8 +35,6 @@ public class StreetApiService {
     public SearchResponse<StreetDoc> search(StreetSearchRequest request) throws CityNotExistsException {
 
         Criteria cityCriteria = new Criteria();
-        Criteria streetNameCriteria = new Criteria();
-
         if (request.getCityId() != null) {
             if (cityRepository.findById(request.getCityId()).isEmpty())
                 throw new CityNotExistsException();
@@ -44,6 +42,7 @@ public class StreetApiService {
             cityCriteria = cityCriteria.andOperator(Criteria.where("cityId").is(request.getCityId()));
         }
 
+        Criteria streetNameCriteria = new Criteria();
         if (request.getQuery() != null && !request.getQuery().isEmpty()) {
             streetNameCriteria = streetNameCriteria.andOperator(Criteria.where("name").regex(request.getQuery(), "i"));
         }
