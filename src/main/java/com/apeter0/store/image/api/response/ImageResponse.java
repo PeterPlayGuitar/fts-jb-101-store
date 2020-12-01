@@ -1,13 +1,13 @@
-package com.apeter0.store.photo.api.response;
+package com.apeter0.store.image.api.response;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Builder;
 import lombok.Getter;
 
-@ApiModel(value = "Photo response")
+@ApiModel(value = "Image response")
 @Getter
 @Builder
-public class PhotoResponse {
+public class ImageResponse {
     private String id;
     private String contentType;
 }

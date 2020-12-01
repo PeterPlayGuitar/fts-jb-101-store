@@ -1,9 +1,9 @@
-package com.apeter0.store.photo.service;
+package com.apeter0.store.image.service;
 
 import com.apeter0.store.base.api.request.SearchRequest;
 import com.apeter0.store.base.api.response.SearchResponse;
-import com.apeter0.store.photo.model.PhotoDoc;
-import com.apeter0.store.photo.repository.PhotoRepository;
+import com.apeter0.store.image.model.ImageDoc;
+import com.apeter0.store.image.repository.ImageRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -25,26 +25,26 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PhotoApiService {
-    private final PhotoRepository photoRepository;
+public class ImageApiService {
+    private final ImageRepository imageRepository;
     private final MongoTemplate mongoTemplate;
 
     private final GridFsTemplate gridFsTemplate;
     private final GridFsOperations gridFsOperations;
 
-    public SearchResponse<PhotoDoc> search(SearchRequest request) {
+    public SearchResponse<ImageDoc> search(SearchRequest request) {
 
         Query query = new Query();
-        Long count = mongoTemplate.count(query, PhotoDoc.class);
+        Long count = mongoTemplate.count(query, ImageDoc.class);
 
         query.limit(request.getSize());
         query.skip(request.getSkip());
 
-        List<PhotoDoc> photoDocs = mongoTemplate.find(query, PhotoDoc.class);
-        return SearchResponse.of(count, photoDocs);
+        List<ImageDoc> imageDocs = mongoTemplate.find(query, ImageDoc.class);
+        return SearchResponse.of(count, imageDocs);
     }
 
-    public PhotoDoc create(MultipartFile file) throws IOException {
+    public ImageDoc create(MultipartFile file) throws IOException {
 
         DBObject metaData = new BasicDBObject();
         metaData.put("type", file.getContentType());
@@ -54,17 +54,17 @@ public class PhotoApiService {
                 file.getInputStream(), file.getOriginalFilename(), file.getContentType(), metaData
         );
 
-        PhotoDoc photoDoc = PhotoDoc.builder()
+        ImageDoc imageDoc = ImageDoc.builder()
                 .id(id)
                 .contentType(file.getContentType())
                 .build();
 
-        photoRepository.save(photoDoc);
-        return photoDoc;
+        imageRepository.save(imageDoc);
+        return imageDoc;
     }
 
-    public Optional<PhotoDoc> findById(ObjectId id) {
-        return photoRepository.findById(id);
+    public Optional<ImageDoc> findById(ObjectId id) {
+        return imageRepository.findById(id);
     }
 
     public InputStream downloadById(ObjectId id) throws ChangeSetPersister.NotFoundException, IOException {
@@ -80,6 +80,6 @@ public class PhotoApiService {
         gridFsTemplate.delete(new Query(
                 Criteria.where("_id").is(id)
         ));
-        photoRepository.deleteById(id);
+        imageRepository.deleteById(id);
     }
 }

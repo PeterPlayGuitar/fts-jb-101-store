@@ -5,8 +5,8 @@ import com.apeter0.store.category.exception.CategoryNotExistsException;
 import com.apeter0.store.category.repository.CategoryRepository;
 import com.apeter0.store.city.exception.CityNotExistsException;
 import com.apeter0.store.city.repository.CityRepository;
-import com.apeter0.store.photo.exception.PhotoNotExistException;
-import com.apeter0.store.photo.repository.PhotoRepository;
+import com.apeter0.store.image.exception.ImageNotExistException;
+import com.apeter0.store.image.repository.ImageRepository;
 import com.apeter0.store.product.api.request.ProductRequest;
 import com.apeter0.store.product.api.request.ProductSearchRequest;
 import com.apeter0.store.product.exception.ProductNotExistsException;
@@ -31,7 +31,7 @@ public class ProductApiService {
     private final MongoTemplate mongoTemplate;
     private final CityRepository cityRepository;
     private final CategoryRepository categoryRepository;
-    private final PhotoRepository photoRepository;
+    private final ImageRepository imageRepository;
 
     public SearchResponse<ProductDoc> search(ProductSearchRequest request) {
 
@@ -68,13 +68,13 @@ public class ProductApiService {
         return productRepository.findById(id);
     }
 
-    public ProductDoc create(ProductRequest productRequest) throws CityNotExistsException, CategoryNotExistsException, PhotoNotExistException {
+    public ProductDoc create(ProductRequest productRequest) throws CityNotExistsException, CategoryNotExistsException, ImageNotExistException {
 
         for (var cityImage : productRequest.getImages()) {
             if (cityRepository.findById(cityImage.getCityId()).isEmpty())
                 throw new CityNotExistsException();
-            else if (photoRepository.findById(cityImage.getImageId()).isEmpty())
-                throw new PhotoNotExistException();
+            else if (imageRepository.findById(cityImage.getImageId()).isEmpty())
+                throw new ImageNotExistException();
         }
 
         for (var cityImage : productRequest.getPrices()) {
@@ -85,8 +85,8 @@ public class ProductApiService {
         if (categoryRepository.findById(productRequest.getCategoryId()).isEmpty())
             throw new CategoryNotExistsException();
 
-        if (photoRepository.findById(productRequest.getDefaultImageId()).isEmpty())
-            throw new PhotoNotExistException();
+        if (imageRepository.findById(productRequest.getDefaultImageId()).isEmpty())
+            throw new ImageNotExistException();
 
         ProductDoc productDoc = ProductDoc.builder()
                 .name(productRequest.getName())
@@ -105,7 +105,7 @@ public class ProductApiService {
         return productRepository.save(productDoc);
     }
 
-    public ProductDoc update(ProductRequest productRequest) throws ProductNotExistsException, CityNotExistsException, CategoryNotExistsException, PhotoNotExistException {
+    public ProductDoc update(ProductRequest productRequest) throws ProductNotExistsException, CityNotExistsException, CategoryNotExistsException, ImageNotExistException {
 
         val productDocOptional = productRepository.findById(productRequest.getId());
 
@@ -129,8 +129,8 @@ public class ProductApiService {
         for (var cityImage : productDoc.getImages()) {
             if (cityRepository.findById(cityImage.getCityId()).isEmpty())
                 throw new CityNotExistsException();
-            else if (photoRepository.findById(cityImage.getImageId()).isEmpty())
-                throw new PhotoNotExistException();
+            else if (imageRepository.findById(cityImage.getImageId()).isEmpty())
+                throw new ImageNotExistException();
         }
 
         for (var cityImage : productDoc.getPrices()) {
@@ -141,8 +141,8 @@ public class ProductApiService {
         if (categoryRepository.findById(productDoc.getCategoryId()).isEmpty())
             throw new CategoryNotExistsException();
 
-        if (photoRepository.findById(productDoc.getDefaultImageId()).isEmpty())
-            throw new PhotoNotExistException();
+        if (imageRepository.findById(productDoc.getDefaultImageId()).isEmpty())
+            throw new ImageNotExistException();
 
         return productRepository.save(productDoc);
     }
