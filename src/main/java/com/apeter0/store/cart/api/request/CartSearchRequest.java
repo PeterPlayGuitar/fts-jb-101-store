@@ -1,4 +1,4 @@
-package com.apeter0.store.guest.api.request;
+package com.apeter0.store.cart.api.request;
 
 import com.apeter0.store.base.api.request.SearchRequest;
 import io.swagger.annotations.ApiModel;

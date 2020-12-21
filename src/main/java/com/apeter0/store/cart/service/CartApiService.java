@@ -1,21 +1,16 @@
 package com.apeter0.store.cart.service;
 
 import com.apeter0.store.base.api.response.SearchResponse;
-import com.apeter0.store.base.cookie.CookieConfig;
-import com.apeter0.store.base.cookie.CookieNames;
 import com.apeter0.store.cart.api.request.CartRequest;
 import com.apeter0.store.cart.exception.CartIsEmptyException;
 import com.apeter0.store.cart.exception.CartNotExistsException;
-import com.apeter0.store.cart.mapping.CartMapping;
 import com.apeter0.store.cart.model.CartDoc;
 import com.apeter0.store.cart.repository.CartRepository;
-import com.apeter0.store.guest.api.request.CartSearchRequest;
+import com.apeter0.store.cart.api.request.CartSearchRequest;
 import com.apeter0.store.guest.exception.GuestNotExistsException;
-import com.apeter0.store.guest.model.GuestDoc;
 import com.apeter0.store.guest.repository.GuestRepository;
 import com.apeter0.store.product.exception.ProductNotExistsException;
 import com.apeter0.store.product.repository.ProductRepository;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -23,12 +18,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +31,6 @@ public class CartApiService {
     private final ProductRepository productRepository;
     private final MongoTemplate mongoTemplate;
 
-    private Gson gson = new Gson();
-
     public SearchResponse<CartDoc> search(CartSearchRequest request) {
         Criteria criteria = new Criteria();
         if (request.getGuestId() != null)
@@ -50,7 +40,7 @@ public class CartApiService {
 
         Query query = new Query(criteria);
 
-        Long count = mongoTemplate.count(query, GuestDoc.class);
+        Long count = mongoTemplate.count(query, CartDoc.class);
 
         query.limit(request.getSize());
         query.skip(request.getSkip());
@@ -63,37 +53,45 @@ public class CartApiService {
         return cartRepository.findById(id);
     }
 
-    public CartDoc create(CartRequest request, HttpServletRequest httpServletRequest) throws CartIsEmptyException {
+    public CartDoc create(CartRequest request) throws GuestNotExistsException, ProductNotExistsException, CartIsEmptyException {
 
-        Cookie[] cookies = httpServletRequest.getCookies();
+        if (!guestRepository.findById(request.getGuestId()).isPresent())
+            throw new GuestNotExistsException();
 
-        if (cookies == null)
+        if(request.getProducts() == null || request.getProducts().isEmpty())
             throw new CartIsEmptyException();
 
-        boolean exists = false;
+        for (var product : request.getProducts()) {
+            if (!productRepository.findById(product.getProductId()).isPresent())
+                throw new ProductNotExistsException();
+        }
 
-        CartDoc.ListOfCartProducts listOfCartProducts = null;
-        for (var c : cookies)
-            if (c.getValue().equals(CookieNames.CART_PRODUCTS)) {
-                exists = true;
-                listOfCartProducts = gson.fromJson(c.getValue(), CartDoc.ListOfCartProducts.class);
-            }
-
-        if (!exists)
-            throw new CartIsEmptyException();
+        List<CartDoc.ProductIdWithQuantity> products = request
+                .getProducts()
+                .stream()
+                .map(
+                        (req) -> CartDoc.ProductIdWithQuantity.builder()
+                                .quantity(req.getQuantity())
+                                .productId(req.getProductId())
+                                .build()
+                )
+                .collect(Collectors.toList());
 
         CartDoc cartDoc = CartDoc.builder()
-                .products(CartMapping.getInstance().getObjectListOfCartProductsToListOfCartProducts().convert(listOfCartProducts))
+                .products(products)
                 .guestId(request.getGuestId())
                 .build();
 
         return cartRepository.save(cartDoc);
     }
 
-    public CartDoc update(CartRequest request) throws ProductNotExistsException, CartNotExistsException, GuestNotExistsException {
+    public CartDoc update(CartRequest request) throws ProductNotExistsException, CartNotExistsException, GuestNotExistsException, CartIsEmptyException {
 
         if (!guestRepository.findById(request.getGuestId()).isPresent())
             throw new GuestNotExistsException();
+
+        if(request.getProducts() == null || request.getProducts().isEmpty())
+            throw new CartIsEmptyException();
 
         for (var product : request.getProducts()) {
             if (!productRepository.findById(product.getProductId()).isPresent())
@@ -106,76 +104,21 @@ public class CartApiService {
 
         CartDoc oldDoc = optionalCartDoc.get();
 
-        oldDoc.setProducts(request.getProducts());
+        List<CartDoc.ProductIdWithQuantity> products = request
+                .getProducts()
+                .stream()
+                .map(
+                        (req) -> CartDoc.ProductIdWithQuantity.builder()
+                                .quantity(req.getQuantity())
+                                .productId(req.getProductId())
+                                .build()
+                )
+                .collect(Collectors.toList());
+
+        oldDoc.setProducts(products);
         oldDoc.setGuestId(request.getGuestId());
 
         return cartRepository.save(oldDoc);
-    }
-
-    public void addProduct(ObjectId productId, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ProductNotExistsException {
-
-        if (!productRepository.findById(productId).isPresent())
-            throw new ProductNotExistsException();
-
-        if (httpServletRequest.getCookies() == null) {
-            List<CartDoc.ProductIdWithQuantity> products = new LinkedList<>();
-            products.add(CartDoc.ProductIdWithQuantity.builder()
-                    .productId(productId)
-                    .quantity(1)
-                    .build());
-
-            CartDoc.ListOfCartProducts listOfCartProducts = CartMapping.getInstance().getListOfCartProductsToObjectListOfCartProducts().convert(products);
-
-            Cookie cookie = new Cookie(CookieNames.CART_PRODUCTS, gson.toJson(listOfCartProducts));
-            cookie.setMaxAge(CookieConfig.MAX_AGE);
-            httpServletResponse.addCookie(cookie);
-
-        } else {
-            boolean cookieExists = false;
-            for (Cookie c : httpServletRequest.getCookies()) {
-                if (c.getName().equals(CookieNames.CART_PRODUCTS)) {
-                    cookieExists = true;
-
-                    CartDoc.ListOfCartProducts listOfCartProducts = gson.fromJson(c.getValue(), CartDoc.ListOfCartProducts.class);
-
-                    boolean productExists = false;
-                    for (var p : listOfCartProducts.getProducts()) {
-                        if (p.getProductId().equals(productId.toString())) {
-                            productExists = true;
-                            p.setQuantity(p.getQuantity() + 1);
-                            break;
-                        }
-                    }
-
-                    if (!productExists) {
-                        listOfCartProducts.getProducts().add(CartDoc.ProductStringIdWithQuantity.builder()
-                                .productId(productId.toString())
-                                .quantity(1)
-                                .build());
-                    }
-
-                    Cookie cookie = new Cookie(CookieNames.CART_PRODUCTS, gson.toJson(listOfCartProducts));
-                    cookie.setMaxAge(CookieConfig.MAX_AGE);
-                    httpServletResponse.addCookie(cookie);
-
-                    break;
-                }
-            }
-
-            if (!cookieExists) {
-                List<CartDoc.ProductIdWithQuantity> products = new LinkedList<>();
-                products.add(CartDoc.ProductIdWithQuantity.builder()
-                        .productId(productId)
-                        .quantity(1)
-                        .build());
-
-                CartDoc.ListOfCartProducts listOfCartProducts = CartMapping.getInstance().getListOfCartProductsToObjectListOfCartProducts().convert(products);
-
-                Cookie cookie = new Cookie(CookieNames.CART_PRODUCTS, gson.toJson(listOfCartProducts));
-                cookie.setMaxAge(CookieConfig.MAX_AGE);
-                httpServletResponse.addCookie(cookie);
-            }
-        }
     }
 
     public void delete(ObjectId id) {

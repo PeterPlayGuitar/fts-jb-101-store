@@ -23,21 +23,6 @@ public class CartDoc {
         private Integer quantity;
     }
 
-    @Getter
-    @Setter
-    @Builder
-    public static class ProductStringIdWithQuantity{
-        private String productId;
-        private Integer quantity;
-    }
-
-    @Getter
-    @Setter
-    @Builder
-    public static class ListOfCartProducts{
-        private List<ProductStringIdWithQuantity> products;
-    }
-
     @Id
     private ObjectId id;
     private ObjectId guestId;
