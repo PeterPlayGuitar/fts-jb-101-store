@@ -1,6 +1,9 @@
 package com.apeter0.store.base.controller;
 
 import com.apeter0.store.base.api.response.ErrorResponse;
+import com.apeter0.store.cart.exception.CartExistsException;
+import com.apeter0.store.cart.exception.CartIsEmptyException;
+import com.apeter0.store.cart.exception.CartNotExistsException;
 import com.apeter0.store.category.exception.CategoryExistsException;
 import com.apeter0.store.category.exception.CategoryNotExistsException;
 import com.apeter0.store.city.exception.CityExistsException;
@@ -87,6 +90,21 @@ public class HandleApiExceptions extends ResponseEntityExceptionHandler {
     @ExceptionHandler(GuestNotExistsException.class)
     public ResponseEntity<Object> guestNotExistsException(GuestNotExistsException ex, WebRequest request) {
         return buildResponseEntity(ErrorResponse.of("This guest does not exist", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(CartExistsException.class)
+    public ResponseEntity<Object> cartExistsException(CartExistsException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This cart already exists", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(CartNotExistsException.class)
+    public ResponseEntity<Object> cartNotExistsException(CartNotExistsException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("This cart does not exist", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(CartIsEmptyException.class)
+    public ResponseEntity<Object> cartIsEmptyException(CartIsEmptyException ex, WebRequest request) {
+        return buildResponseEntity(ErrorResponse.of("Can't process request because cart was empty", HttpStatus.BAD_REQUEST));
     }
 
 
