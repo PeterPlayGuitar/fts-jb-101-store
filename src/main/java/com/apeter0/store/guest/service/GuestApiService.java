@@ -129,7 +129,6 @@ public class GuestApiService {
         GuestDoc guestDoc = GuestDoc.builder()
                 .firstName(guestRequest.getFirstName())
                 .phoneNumber(guestRequest.getPhoneNumber())
-                .cityId(guestRequest.getCityId())
                 .streetId(guestRequest.getStreetId())
                 .house(guestRequest.getHouse())
                 .apartment(guestRequest.getApartment())

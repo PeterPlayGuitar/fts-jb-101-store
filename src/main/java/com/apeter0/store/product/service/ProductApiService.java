@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,17 +71,25 @@ public class ProductApiService {
 
     public ProductDoc create(ProductRequest productRequest) throws CityNotExistsException, CategoryNotExistsException, ImageNotExistException {
 
-        for (var cityImage : productRequest.getImages()) {
-            if (cityRepository.findById(cityImage.getCityId()).isEmpty())
-                throw new CityNotExistsException();
-            else if (imageRepository.findById(cityImage.getImageId()).isEmpty())
-                throw new ImageNotExistException();
-        }
+        var images = productRequest.getImages();
+        if (images != null) {
 
-        for (var cityImage : productRequest.getPrices()) {
-            if (cityRepository.findById(cityImage.getCityId()).isEmpty())
-                throw new CityNotExistsException();
-        }
+            for (var cityImage : productRequest.getImages())
+                if (cityRepository.findById(cityImage.getCityId()).isEmpty())
+                    throw new CityNotExistsException();
+                else if (imageRepository.findById(cityImage.getImageId()).isEmpty())
+                    throw new ImageNotExistException();
+        } else
+            images = new LinkedList<>();
+
+        var prices = productRequest.getPrices();
+        if (prices != null) {
+            for (var cityImage : productRequest.getPrices()) {
+                if (cityRepository.findById(cityImage.getCityId()).isEmpty())
+                    throw new CityNotExistsException();
+            }
+        } else
+            prices = new LinkedList<>();
 
         if (categoryRepository.findById(productRequest.getCategoryId()).isEmpty())
             throw new CategoryNotExistsException();
@@ -93,13 +102,13 @@ public class ProductApiService {
                 .categoryId(productRequest.getCategoryId())
                 .description(productRequest.getDescription())
                 .defaultPrice(productRequest.getDefaultPrice())
-                .prices(productRequest.getPrices())
+                .prices(prices)
                 .proteins(productRequest.getProteins())
                 .fats(productRequest.getFats())
                 .carbohydrates(productRequest.getCarbohydrates())
                 .calories(productRequest.getCalories())
                 .defaultImageId(productRequest.getDefaultImageId())
-                .images(productRequest.getImages())
+                .images(images)
                 .build();
 
         return productRepository.save(productDoc);

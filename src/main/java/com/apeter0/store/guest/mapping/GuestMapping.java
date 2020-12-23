@@ -20,7 +20,6 @@ public class GuestMapping {
                     .id(guestDoc.getId().toString())
                     .firstName(guestDoc.getFirstName())
                     .phoneNumber(guestDoc.getPhoneNumber())
-                    .cityId(guestDoc.getCityId().toString())
                     .streetId(guestDoc.getStreetId().toString())
                     .house(guestDoc.getHouse())
                     .apartment(guestDoc.getApartment())
