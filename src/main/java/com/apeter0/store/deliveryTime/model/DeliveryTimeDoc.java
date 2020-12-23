@@ -1,4 +1,4 @@
-package com.apeter0.store.guest.model;
+package com.apeter0.store.deliveryTime.model;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,15 +11,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @Builder
-public class GuestDoc {
+public class DeliveryTimeDoc {
 
     @Id
     private ObjectId id;
-    private String firstName;
-    private String phoneNumber;
-    private ObjectId streetId;
-    private String house;
-    private Integer apartment;
-    private Integer entrance;
-    private Integer floor;
+    private String name;
+    private Integer index;
 }

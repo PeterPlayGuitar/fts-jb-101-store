@@ -1,4 +1,4 @@
-package com.apeter0.store.guest.model;
+package com.apeter0.store.order.model;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,15 +11,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @Builder
-public class GuestDoc {
+public class OrderDoc {
 
     @Id
     private ObjectId id;
-    private String firstName;
     private String phoneNumber;
     private ObjectId streetId;
     private String house;
     private Integer apartment;
     private Integer entrance;
     private Integer floor;
+    private ObjectId cartId;
+    private ObjectId deliveryTimeId;
+    private PaymentMethod paymentMethod;
+    private Integer totalPrice;
 }
